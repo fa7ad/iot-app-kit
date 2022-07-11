@@ -1,3 +1,4 @@
+import { MockDashboardFactory, MockWidgetFactory, MOCK_EMPTY_DASHBOARD } from '../testing/mocks';
 import { applyReverseAction, reverseAction } from './reverseAction';
 //broken into sections based on reverse actions and applying reversals.
 //broken into sub sections based on move or resize
@@ -110,9 +111,10 @@ describe('reverseActions - RESIZE', () => {
 });
 
 /** check applying reversals  */
-const dashConfig = [{ x: 1, y: 1, width: 1, height: 1, id: 'some-id', widget: 'line-chart' }];
+const widget = MockWidgetFactory.getLineChartWidget({ x: 1, y: 1, width: 1, height: 1, id: 'some-id' });
+const dashConfig = MockDashboardFactory.get({ widgets: [widget] });
 
-const fractionalConfig = [{ x: 1.1, y: 1, width: 1, height: 1, id: 'some-id', widget: 'line-chart' }];
+const fractionalConfig = MockDashboardFactory.get({ widgets: [{ ...widget, x: 1.1 }] });
 describe('applyReverseActions - case: MOVE', () => {
   it('reverses move action', () => {
     expect(
@@ -128,7 +130,7 @@ describe('applyReverseActions - case: MOVE', () => {
         },
         dashConfig
       )
-    ).toEqual([{ x: 2, y: 3, width: 1, height: 1, id: 'some-id', widget: 'line-chart' }]);
+    ).toEqual({ ...dashConfig, widgets: [{ ...widget, x: 2, y: 3 }] });
   });
   it('returns empty configuration when given one', () => {
     expect(
@@ -142,9 +144,9 @@ describe('applyReverseActions - case: MOVE', () => {
             cellSize: 10,
           },
         },
-        []
+        MOCK_EMPTY_DASHBOARD
       )
-    ).toEqual([]);
+    ).toEqual(MOCK_EMPTY_DASHBOARD);
   });
   it('reverses fractional move change', () => {
     expect(
@@ -160,12 +162,13 @@ describe('applyReverseActions - case: MOVE', () => {
         },
         fractionalConfig
       )
-    ).toEqual([{ x: 1, y: 1, width: 1, height: 1, id: 'some-id', widget: 'line-chart' }]);
+    ).toEqual({ ...fractionalConfig, widgets: [{ ...widget, x: 1 }] });
   });
 });
 
 describe('applyReverseActions - case: RESIZE', () => {
-  const resizeDashConfig = [{ x: 5, y: 5, width: 4, height: 4, id: 'some-id', widget: 'line-chart' }];
+  const widget = MockWidgetFactory.getLineChartWidget({ x: 5, y: 5, width: 4, height: 4, id: 'some-id' });
+  const resizeDashConfig = MockDashboardFactory.get({ widgets: [widget] });
   it('reverses resize action', () => {
     expect(
       applyReverseAction(
@@ -180,7 +183,7 @@ describe('applyReverseActions - case: RESIZE', () => {
         },
         resizeDashConfig
       )
-    ).toEqual([{ x: 5, y: 5, width: 3, height: 2, id: 'some-id', widget: 'line-chart' }]);
+    ).toEqual({ ...resizeDashConfig, widgets: [{ ...widget, x: 5, y: 5, width: 3, height: 2 }] });
   });
 
   it('returns no change to the dashboard configuration when changeInPosition is {0,0}', () => {

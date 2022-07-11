@@ -144,12 +144,12 @@ export class IotDashboard {
   }
 
   onCopy() {
-    this.copyGroup = this.dashboardConfiguration.filter(({ id }) => this.selectedWidgetIds.includes(id));
+    this.copyGroup = this.dashboardConfiguration.widgets.filter(({ id }) => this.selectedWidgetIds.includes(id));
     this.numTimesCopyGroupHasBeenPasted = 0;
   }
 
   onPaste() {
-    const existingWidgetIds = this.getDashboardConfiguration().map(({ id }) => id);
+    const existingWidgetIds = this.getDashboardConfiguration().widgets.map(({ id }) => id);
     this.setDashboardConfiguration(
       paste({
         dashboardConfiguration: this.getDashboardConfiguration(),
@@ -161,7 +161,7 @@ export class IotDashboard {
 
     // Set the selection group to the newly pasted group of widgets
     const newlyCreatedWidgetIds = this.getDashboardConfiguration()
-      .filter(({ id }) => !existingWidgetIds.includes(id))
+      .widgets.filter(({ id }) => !existingWidgetIds.includes(id))
       .map(({ id }) => id);
     this.selectedWidgetIds = newlyCreatedWidgetIds;
   }
@@ -386,7 +386,9 @@ export class IotDashboard {
   }
 
   snapWidgetsToGrid() {
-    this.setDashboardConfiguration(this.getDashboardConfiguration().map(trimWidgetPosition));
+    const config = this.getDashboardConfiguration();
+    config.widgets = config.widgets.map(trimWidgetPosition);
+    this.setDashboardConfiguration(config);
   }
 
   /**
@@ -434,12 +436,14 @@ export class IotDashboard {
           width: this.stretchToFit ? '100%' : `${this.width}px`,
         }}
       >
-        {dashboardConfiguration.map((widget) => (
+        {dashboardConfiguration.widgets.map((widget) => (
           <iot-dashboard-widget
             isSelected={this.selectedWidgetIds.includes(widget.id)}
+            isMoving={this.activeGesture === 'move' && this.selectedWidgetIds.includes(widget.id)}
             key={widget.id}
             cellSize={this.actualCellSize()}
             widget={widget}
+            viewport={this.dashboardConfiguration.viewport}
           />
         ))}
 

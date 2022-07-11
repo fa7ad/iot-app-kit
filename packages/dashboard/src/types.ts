@@ -1,20 +1,28 @@
-import { Viewport } from '@iot-app-kit/core';
+import { TimeQuery, TimeSeriesData, TimeSeriesDataRequest, Viewport } from '@iot-app-kit/core';
+import { Annotations, ChartConfig, MinimalViewPortConfig } from '@synchro-charts/core';
 import { Store } from 'redux';
 import { Action } from 'redux';
 
 export type Widget = {
   id: string;
-  widget: string;
+  componentTag: string;
+  title?: string;
   x: number;
   y: number;
   z: number;
   height: number;
   width: number;
+  queries: TimeQuery<TimeSeriesData[], TimeSeriesDataRequest>[];
+  properties?: ChartConfig;
+  annotations?: Annotations;
 };
 
 export type Anchor = 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' | 'left' | 'right' | 'top' | 'bottom';
 
-export type DashboardConfiguration = Widget[];
+export type DashboardConfiguration = {
+  widgets: Widget[];
+  viewport: MinimalViewPortConfig;
+};
 
 export type DashboardStore = Store<DashboardConfiguration, DashboardAction>;
 

@@ -1,10 +1,12 @@
 import { dashboardReducer } from './dashboardReducer';
 import { onMoveAction } from './actions';
+import { DashboardConfiguration } from '../types';
+import { MOCK_EMPTY_DASHBOARD } from '../testing/mocks';
 
 it('returns empty dashboard configuration when provided an empty dashboard', () => {
   expect(
     dashboardReducer(
-      [],
+      MOCK_EMPTY_DASHBOARD,
       onMoveAction({
         widgetIds: [],
         cellSize: 10,
@@ -12,5 +14,5 @@ it('returns empty dashboard configuration when provided an empty dashboard', () 
         prevPosition: { x: 14, y: 10 },
       })
     )
-  ).toEqual([]);
+  ).toEqual(MOCK_EMPTY_DASHBOARD);
 });
