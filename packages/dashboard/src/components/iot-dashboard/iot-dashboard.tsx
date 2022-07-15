@@ -1,5 +1,5 @@
 import { Component, h, Listen, State, Prop, Watch, Element } from '@stencil/core';
-import { Position, Rect, DashboardConfiguration, OnResize, Anchor, Widget } from '../../types';
+import { Position, Rect, DashboardConfiguration, OnResize, Anchor, MoveActionInput, Widget } from '../../types';
 import { getSelectedWidgetIds } from '../../util/select';
 import ResizeObserver from 'resize-observer-polyfill';
 import { resize } from '../../dashboard-actions/resize';
@@ -39,13 +39,15 @@ export class IotDashboard {
    *
    * If stretch to fit is true, the entire grid will scale proportionally to scale to the available space for the grid.
    */
-  @Prop() stretchToFit: boolean = DEFAULT_STRETCH_TO_FIT;
+  @Prop() stretchToFit: Boolean = DEFAULT_STRETCH_TO_FIT;
 
   /** Width of the dashboard, in pixels */
   @Prop() width: number;
 
   /** Width and height of the cell, in pixels */
   @Prop() cellSize: number = DEFAULT_CELL_SIZE;
+
+  @Prop() move: (moveInput: MoveActionInput) => void;
 
   /** List of ID's of the currently selected widgets. */
   @State() selectedWidgetIds: string[] = [];
@@ -72,7 +74,7 @@ export class IotDashboard {
    */
   // Currently selected group of widgets to copy
   @State() copyGroup: Widget[] = [];
-  @State() numTimesCopyGroupHasBeenPasted = 0;
+  @State() numTimesCopyGroupHasBeenPasted: number = 0;
 
   /**
    * Move gesture
@@ -142,12 +144,12 @@ export class IotDashboard {
   }
 
   onCopy() {
-    this.copyGroup = this.dashboardConfiguration.filter(({ id }) => this.selectedWidgetIds.includes(id));
+    this.copyGroup = this.dashboardConfiguration.widgets.filter(({ id }) => this.selectedWidgetIds.includes(id));
     this.numTimesCopyGroupHasBeenPasted = 0;
   }
 
   onPaste() {
-    const existingWidgetIds = this.getDashboardConfiguration().map(({ id }) => id);
+    const existingWidgetIds = this.getDashboardConfiguration().widgets.map(({ id }) => id);
     this.setDashboardConfiguration(
       paste({
         dashboardConfiguration: this.getDashboardConfiguration(),
@@ -159,7 +161,7 @@ export class IotDashboard {
 
     // Set the selection group to the newly pasted group of widgets
     const newlyCreatedWidgetIds = this.getDashboardConfiguration()
-      .filter(({ id }) => !existingWidgetIds.includes(id))
+      .widgets.filter(({ id }) => !existingWidgetIds.includes(id))
       .map(({ id }) => id);
     this.selectedWidgetIds = newlyCreatedWidgetIds;
   }
@@ -384,7 +386,9 @@ export class IotDashboard {
   }
 
   snapWidgetsToGrid() {
-    this.setDashboardConfiguration(this.getDashboardConfiguration().map(trimWidgetPosition));
+    const config = this.getDashboardConfiguration();
+    config.widgets = config.widgets.map(trimWidgetPosition);
+    this.setDashboardConfiguration(config);
   }
 
   /**
@@ -432,12 +436,14 @@ export class IotDashboard {
           width: this.stretchToFit ? '100%' : `${this.width}px`,
         }}
       >
-        {dashboardConfiguration.map((widget) => (
+        {dashboardConfiguration.widgets.map((widget) => (
           <iot-dashboard-widget
             isSelected={this.selectedWidgetIds.includes(widget.id)}
+            isMoving={this.activeGesture === 'move' && this.selectedWidgetIds.includes(widget.id)}
             key={widget.id}
             cellSize={this.actualCellSize()}
             widget={widget}
+            viewport={this.dashboardConfiguration.viewport}
           />
         ))}
 
