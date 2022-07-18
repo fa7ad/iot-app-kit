@@ -9,6 +9,10 @@ import { Anchor, DashboardConfiguration, MoveActionInput, OnResize, Widget } fro
 import { AlarmsConfig, Annotations, Axis, LabelsConfig, LayoutConfig, LegendConfig, MessageOverrides, MinimalSizeConfig, MinimalViewPortConfig, MovementConfig, ScaleConfig, Trend } from "@synchro-charts/core";
 import { TimeQuery, TimeSeriesData, TimeSeriesDataRequest } from "@iot-app-kit/core";
 export namespace Components {
+    interface IotContextMenu {
+        "x": number;
+        "y": number;
+    }
     interface IotDashboard {
         /**
           * Width and height of the cell, in pixels
@@ -103,6 +107,12 @@ export namespace Components {
     }
 }
 declare global {
+    interface HTMLIotContextMenuElement extends Components.IotContextMenu, HTMLStencilElement {
+    }
+    var HTMLIotContextMenuElement: {
+        prototype: HTMLIotContextMenuElement;
+        new (): HTMLIotContextMenuElement;
+    };
     interface HTMLIotDashboardElement extends Components.IotDashboard, HTMLStencilElement {
     }
     var HTMLIotDashboardElement: {
@@ -146,6 +156,7 @@ declare global {
         new (): HTMLTestingGroundElement;
     };
     interface HTMLElementTagNameMap {
+        "iot-context-menu": HTMLIotContextMenuElement;
         "iot-dashboard": HTMLIotDashboardElement;
         "iot-dashboard-dynamic-widget": HTMLIotDashboardDynamicWidgetElement;
         "iot-dashboard-widget": HTMLIotDashboardWidgetElement;
@@ -156,6 +167,10 @@ declare global {
     }
 }
 declare namespace LocalJSX {
+    interface IotContextMenu {
+        "x"?: number;
+        "y"?: number;
+    }
     interface IotDashboard {
         /**
           * Width and height of the cell, in pixels
@@ -249,6 +264,7 @@ declare namespace LocalJSX {
     interface TestingGround {
     }
     interface IntrinsicElements {
+        "iot-context-menu": IotContextMenu;
         "iot-dashboard": IotDashboard;
         "iot-dashboard-dynamic-widget": IotDashboardDynamicWidget;
         "iot-dashboard-widget": IotDashboardWidget;
@@ -262,6 +278,7 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            "iot-context-menu": LocalJSX.IotContextMenu & JSXBase.HTMLAttributes<HTMLIotContextMenuElement>;
             "iot-dashboard": LocalJSX.IotDashboard & JSXBase.HTMLAttributes<HTMLIotDashboardElement>;
             "iot-dashboard-dynamic-widget": LocalJSX.IotDashboardDynamicWidget & JSXBase.HTMLAttributes<HTMLIotDashboardDynamicWidgetElement>;
             "iot-dashboard-widget": LocalJSX.IotDashboardWidget & JSXBase.HTMLAttributes<HTMLIotDashboardWidgetElement>;

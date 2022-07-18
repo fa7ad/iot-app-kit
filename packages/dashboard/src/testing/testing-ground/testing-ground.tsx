@@ -1,4 +1,4 @@
-import { Component, State, h } from '@stencil/core';
+import { Component, State, h, Listen } from '@stencil/core';
 import { DashboardConfiguration } from '../../types';
 import { concatWidgets } from '../../util/dashboardConfiguration';
 import { dashboardConfig, MockWidgetFactory } from '../mocks';

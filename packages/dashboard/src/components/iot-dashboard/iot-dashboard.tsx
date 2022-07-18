@@ -10,8 +10,15 @@ import { trimWidgetPosition } from './trimWidgetPosition';
 import { deleteWidgets } from '../../dashboard-actions/delete';
 import { paste } from '../../dashboard-actions/paste';
 
+import "@awsui/global-styles/index.css";
+
 const DEFAULT_STRETCH_TO_FIT = true;
 const DEFAULT_CELL_SIZE = 15;
+
+enum MouseClick {
+  Left = 0,
+  Right = 2,
+}
 
 @Component({
   tag: 'iot-dashboard',
@@ -65,7 +72,6 @@ export class IotDashboard {
   /**
    * Selection gesture
    */
-
   @State() start: Position | undefined;
   @State() end: Position | undefined;
 
@@ -79,7 +85,6 @@ export class IotDashboard {
   /**
    * Move gesture
    */
-
   @State() previousPosition: Position | undefined;
 
   /**
@@ -90,6 +95,9 @@ export class IotDashboard {
   @State() activeResizeAnchor: Anchor | undefined;
   /** The initial position of the cursor on the start of the resize gesture */
   @State() resizeStartPosition: Position | undefined;
+
+  @State() contextMenuOpen: boolean = false;
+  @State() contextMenuPosition: Position | undefined;
 
   componentWillLoad() {
     this.currDashboardConfiguration = this.dashboardConfiguration;
@@ -175,13 +183,29 @@ export class IotDashboard {
   onGestureStart(event: MouseEvent) {
     const { x, y } = getDashboardPosition(event);
     const isMoveGesture = !event.shiftKey && this.isPositionOnWidget({ x, y });
+    const isSelectionGesture = event.button === MouseClick.Left;
+    const isContextMenuGesture = event.button === MouseClick.Right;
+
+    if (!isContextMenuGesture) {
+      this.hideContextMenu();
+    }
 
     if (isMoveGesture) {
       this.onMoveStart({ x, y });
-    } else {
+    } else if (isSelectionGesture) {
       this.onSelectionStart(event);
     }
     // NOTE: Resize is initiated within the `<iot-selection-box />`
+  }
+
+  @Listen('contextmenu')
+  onContextMenu(event: MouseEvent) {
+    console.log('doing a thing; ', this.contextMenuOpen);
+    const { x, y } = getDashboardPosition(event);
+    this.contextMenuOpen = !this.contextMenuOpen;
+    this.contextMenuPosition = { x, y };
+    event.preventDefault();
+    return;
   }
 
   onSelectionStart(event: MouseEvent) {
@@ -337,6 +361,7 @@ export class IotDashboard {
 
   @Listen('mousedown')
   onMouseDown(event: MouseEvent) {
+    console.log('mosue down', event);
     this.onGestureStart(event);
   }
 
@@ -372,6 +397,10 @@ export class IotDashboard {
       this.onPaste();
       return;
     }
+  }
+
+  hideContextMenu() {
+    this.contextMenuOpen = false;
   }
 
   /**
@@ -470,6 +499,9 @@ export class IotDashboard {
             }}
           ></div>
         )}
+
+        {this.contextMenuOpen && this.contextMenuPosition &&
+          (<iot-context-menu {...this.contextMenuPosition}></iot-context-menu>)}
       </div>
     );
   }

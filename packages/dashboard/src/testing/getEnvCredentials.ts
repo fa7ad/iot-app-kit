@@ -1,17 +1,7 @@
 export const getEnvCredentials = () => {
-  if (
-    process.env.AWS_ACCESS_KEY_ID == null ||
-    process.env.AWS_SECRET_ACCESS_KEY == null ||
-    process.env.AWS_SESSION_TOKEN == null
-  ) {
-    throw new Error(
-      'Missing credentials: must provide the following env variables: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY and AWS_SESSION_TOKEN within .env'
-    );
-  }
   return {
-    // Provided by `.env` environment variable file
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    sessionToken: process.env.AWS_SESSION_TOKEN,
-  };
+		"accessKeyId": "ASIATYCMAYIAO45VA7QB",
+		"secretAccessKey": "ShLSjb9ArC79mo0+yk7HwV06NNK3ixIwRq5PoYDa",
+		"sessionToken": "IQoJb3JpZ2luX2VjELz//////////wEaCXVzLWVhc3QtMSJHMEUCIQCq2HD7e+qfC12HyYdV2gUc6E3Z/aI2yC9hel4hIXQ6NAIgHpIHSb9QmIblVqB1Hso6u64jTongLM3L/3YeR6Z9jukqpgII9f//////////ARABGgwyNTc4NTc0NzA5NzYiDNA+xgaQGMicAThsbir6AWef2ZbzS0iFuQFgbn87UiidXMbZ7NndcAy0dVEiwH4aNLRWlVhXvfOG2lX/Y0BIOPHVLXGf44YXatRlQyN31ho+hMTQ7LfLmIm/wzqtZMwZ8YhO7cclgMOgwwXYt7fTpmREtdOr1/w0lJE+KhCvzJjUBH1xtVwDQFQOC3SyekUJE1iwChb8jaBjRlQFZhEztRPRvhmfEW1Nb9l+2osYL0w3iVd0JZjaovFtv0pOyNOMfVUMYDmbflHEQp6OsoE+BRkIuoRrMc+bVH2iVHEA1pGejH96S8zIYFYKZz3yATNORO3mr5ZThTJc99LrfcUl9fnGQMVCfgCCFnkww+rWlgY6nQE1zPjictLqATPKvqqaZShmh4n1XNe//TIWGz/EjHcOQ7hBx+6ytcZod0My4ZriTLvY1Ug3yDjam9KBvw63i1QeNlznyYjD9RD9KIdBTCmVUw37U3zbEppbiHWLI4oT8rdMU8XEmkIwjWCJf7KQYq6urn4wChaQ2oOC2XjhpqcGP6YkGjAhrOJWFNeILExSoKjRKXfKFYworcBur+2I",
+	};
 };

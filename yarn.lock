@@ -770,6 +770,11 @@
   resolved "https://registry.yarnpkg.com/@awsui/design-tokens/-/design-tokens-3.0.24.tgz#0ac6e7dc8bb0b8f1c57e280c7656c3b8df9ec972"
   integrity sha512-wisVyMLML2jcBirU4HZ/jx8Ho/tWn/skZUw2CJtJI9MtRvt/Btlaf3MxF/vj54yTW/c9GAMWCXt2dbHw0ZW1cw==
 
+"@awsui/global-styles@^1.0.9":
+  version "1.0.17"
+  resolved "https://registry.yarnpkg.com/@awsui/global-styles/-/global-styles-1.0.17.tgz#d5455f1d7789a986d57857cc90d1ec8325d36e57"
+  integrity sha512-LhIzCd+/+idOfzdhVnv7jshb762loztuc2kAxXKoCxbP5G+4L52j01a7ZruGNIiVEoljEbOYxCVzZ+Yohg6VJA==
+
 "@awsui/test-utils-core@^1.0.0":
   version "1.0.24"
   resolved "https://registry.yarnpkg.com/@awsui/test-utils-core/-/test-utils-core-1.0.24.tgz#65a137ea5aa014b7cae88768ee35f6a979dee999"
