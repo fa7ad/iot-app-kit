@@ -1,20 +1,22 @@
+/* eslint-disable */
+const setURLModifierMock = jest.fn();
+jest.doMock('three', () => {
+  const originalModule = jest.requireActual('three');
+  return {
+    ...originalModule,
+    LoadingManager: class {
+      setURLModifier = setURLModifierMock;
+    },
+  };
+});
+/* eslint-ensable */
+
 import { DRACOLoader } from 'three-stdlib';
-import { DefaultLoadingManager } from 'three';
 import { useLoader as mockUseLoader } from '@react-three/fiber';
 
 import { TwinMakerGLTFLoader } from '../../../../three/GLTFLoader';
 import { useGLTF } from '../GLTFLoader';
 import { getGlobalSettings as mockGetGlobalSettings } from '../../../../common/GlobalSettings';
-
-jest.mock('three', () => {
-  const originalModule = jest.requireActual('three');
-  return {
-    ...originalModule,
-    LoadingManager: class {
-      setURLModifier = jest.fn();
-    },
-  };
-});
 
 jest.mock('@react-three/fiber', () => {
   const originalModule = jest.requireActual('@react-three/fiber');
@@ -102,15 +104,13 @@ describe('GLTFLoader', () => {
     });
 
     it('should call useLoader', async () => {
-      const setURLModifierSpy = jest.spyOn(DefaultLoadingManager, 'setURLModifier');
-
       useGLTF('mock/path', uriModifier, extendLoader, onProgress);
       extensionsCb(mockLoader);
 
       expect(mockUseLoader).toBeCalledWith(TwinMakerGLTFLoader, 'mock/path', expect.anything(), onProgress);
       expect(extendLoader).toBeCalledTimes(1);
       expect(mockLoader.manager).toBeDefined();
-      expect(setURLModifierSpy).toBeCalledWith(uriModifier);
+      expect(setURLModifierMock).toBeCalledWith(uriModifier);
     });
   });
 

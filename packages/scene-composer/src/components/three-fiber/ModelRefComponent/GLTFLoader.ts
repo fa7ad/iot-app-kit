@@ -1,4 +1,4 @@
-import { Loader, LoadingManager, DefaultLoadingManager } from 'three';
+import { Loader, LoadingManager } from 'three';
 import { useLoader } from '@react-three/fiber';
 
 import { TwinMakerGLTFLoader } from '../../../three/GLTFLoader';
@@ -14,6 +14,8 @@ function extensions(extendLoader?: (loader: TwinMakerGLTFLoader) => void) {
   };
 }
 
+const manager = new LoadingManager();
+
 /**
  * Extend the drei useGLTF hook to explicitly support loading manager.
  */
@@ -28,11 +30,11 @@ export function useGLTF<T extends string | string[]>(
     path,
     extensions((loader) => {
       if (extendLoader) extendLoader(loader);
-      if (!loader.manager) {
-        loader.manager = DefaultLoadingManager;
-      }
 
-      if (uriModifier) loader.manager.setURLModifier(uriModifier);
+      if (uriModifier) {
+        loader.manager = manager;
+        loader.manager.setURLModifier(uriModifier);
+      }
     }),
     onProgress,
   );
@@ -49,11 +51,11 @@ useGLTF.preload = (
     path,
     extensions((loader) => {
       if (extendLoader) extendLoader(loader);
-      if (!loader.manager) {
-        loader.manager = new LoadingManager();
-      }
 
-      if (uriModifier) loader.manager.setURLModifier(uriModifier);
+      if (uriModifier) {
+        loader.manager = manager;
+        loader.manager.setURLModifier(uriModifier);
+      }
     }),
   );
 
