@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useContext, useMemo, useState } from 'react';
+import React, { FC, useCallback, useContext, useMemo } from 'react';
 import { Object3D } from 'three';
 
 import ISceneHierarchyNode from '../../model/ISceneHierarchyNode';
@@ -17,7 +17,7 @@ import { AcceptableDropTypes, EnhancedTree, EnhancedTreeItem } from './constants
 
 interface SceneHierarchyTreeItemProps extends ISceneHierarchyNode {
   enableDragAndDrop?: boolean;
-  expanded?: boolean;
+  nodesToExpand: string[];
 }
 
 const SceneHierarchyTreeItem: FC<SceneHierarchyTreeItemProps> = ({
@@ -25,10 +25,8 @@ const SceneHierarchyTreeItem: FC<SceneHierarchyTreeItemProps> = ({
   name: labelText,
   componentTypes,
   enableDragAndDrop,
-  expanded: defaultExpanded = false,
+  nodesToExpand,
 }: SceneHierarchyTreeItemProps) => {
-  const [expanded, setExpanded] = useState(defaultExpanded);
-
   const { selected, select, unselect, activate, move, selectionMode, getObject3DBySceneNodeRef, isViewing } =
     useSceneHierarchyData();
 
@@ -49,8 +47,33 @@ const SceneHierarchyTreeItem: FC<SceneHierarchyTreeItemProps> = ({
   const { searchTerms } = useSceneHierarchyData();
   const isSearching = searchTerms !== '';
 
+  const isExpanded = () => {
+    return nodesToExpand.indexOf(key) > -1;
+  };
+
+  const removeNodeFromExpandList = (nodeRef: string) => {
+    if (nodesToExpand.indexOf(nodeRef) > -1) {
+      nodesToExpand.splice(nodesToExpand.indexOf(nodeRef), 1);
+      const currentNode = getSceneNodeByRef(nodeRef);
+      currentNode?.childRefs.forEach((child) => {
+        removeNodeFromExpandList(child);
+      });
+    }
+  };
+
+  const addNodeToExpandList = (nodeRef: string) => {
+    if (nodesToExpand.indexOf(nodeRef) === -1) {
+      nodesToExpand.push(nodeRef);
+    }
+  };
+
   const onExpandNode = useCallback((expanded) => {
-    setExpanded(expanded);
+    activate(key);
+    if (expanded) {
+      addNodeToExpandList(key);
+    } else {
+      removeNodeFromExpandList(key);
+    }
   }, []);
 
   const onToggle = useCallback(
@@ -79,7 +102,7 @@ const SceneHierarchyTreeItem: FC<SceneHierarchyTreeItemProps> = ({
       key={key}
       labelText={<SceneNodeLabel objectRef={key} labelText={labelText} componentTypes={componentTypes} />}
       onExpand={onExpandNode}
-      expanded={expanded}
+      expanded={isExpanded()}
       expandable={((node && node.childRefs.length > 0) || showSubModel) && !isSearching}
       selected={selected === key}
       selectionMode={selectionMode}
@@ -91,12 +114,17 @@ const SceneHierarchyTreeItem: FC<SceneHierarchyTreeItemProps> = ({
       dataType={componentTypes && componentTypes.length > 0 ? componentTypes[0] : /* istanbul ignore next */ 'default'} // TODO: This is somewhat based on the current assumption that items will currently only really have one componentType
       data={{ ref: key }}
     >
-      {expanded && (
+      {isExpanded() && (
         <EnhancedTree droppable={enableDragAndDrop} acceptDrop={AcceptableDropTypes} onDropped={dropHandler}>
           {childNodes.map((node, index) => (
             <React.Fragment key={index}>
               {!isSearching && (
-                <SceneHierarchyTreeItem key={node.objectRef} enableDragAndDrop={enableDragAndDrop} {...node} />
+                <SceneHierarchyTreeItem
+                  key={node.objectRef}
+                  enableDragAndDrop={enableDragAndDrop}
+                  {...node}
+                  nodesToExpand={nodesToExpand}
+                />
               )}
             </React.Fragment>
           ))}
